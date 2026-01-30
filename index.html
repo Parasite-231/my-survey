@@ -333,6 +333,7 @@
             z-index: 9999;
             animation: slideIn 0.3s ease, fadeOut 0.3s ease 2.7s;
             display: none;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
         
         .success {
@@ -712,6 +713,11 @@
         <div class="footer">
             <marquee>Thank you for participating in our survey. Your feedback will help us improve our work.</marquee>
             <p>© 2026</p>
+            <p style="font-size: 0.8rem; margin-top: 10px;">
+                <a href="/admin" style="color: #3498db; text-decoration: none;">
+                    <i class="fas fa-chart-bar"></i> Admin Dashboard
+                </a>
+            </p>
         </div>
     </div>
     
@@ -812,7 +818,7 @@
                 submitBtn.disabled = true;
                 
                 try {
-                    // Send to backend
+                    // Send to Flask backend
                     const response = await fetch('/api/submit', {
                         method: 'POST',
                         headers: {
