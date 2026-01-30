@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accessibility Visualization Survey</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Tab Icon (Favicon) -->
+    <link rel="icon" href="./icon.png">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Times New Roman', Times, serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .container {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eaeaea;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 2.2rem;
+        }
+        
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .images-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 30px 0;
+            justify-content: center;
+        }
+        
+        .image-box {
+            flex: 1;
+            min-width: 300px;
+            max-width: 500px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .image-box:hover {
+            transform: translateY(-5px);
+        }
+        
+        .image-title {
+            background-color: #3498db;
+            color: white;
+            padding: 12px;
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        /* Image content with resizable images */
+        .image-content {
+            height: 280px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            overflow: hidden;
+            position: relative;
+            padding: 10px;
+        }
+        
+        .image-content img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+            cursor: pointer;
+            max-width: 100%;
+            max-height: 100%;
+        }
+        
+        .image-content img:hover {
+            transform: scale(1.03);
+        }
+        
+        /* Modal for full-size image view */
+        .image-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            padding-top: 60px;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            overflow: auto;
+        }
+        
+        .modal-content {
+            margin: auto;
+            display: block;
+            max-width: 90%;
+            max-height: 80vh;
+            animation: zoom 0.3s;
+        }
+        
+        @keyframes zoom {
+            from {transform: scale(0.8)}
+            to {transform: scale(1)}
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 35px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            z-index: 1001;
+        }
+        
+        .close-modal:hover {
+            color: #bbb;
+        }
+        
+        .image-caption {
+            text-align: center;
+            color: #ccc;
+            padding: 10px 0;
+            height: 100px;
+            font-size: 1.2rem;
+        }
+        
+        .survey-form {
+            margin-top: 40px;
+        }
+        
+        .question {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border-left: 5px solid #3498db;
+        }
+        
+        .question-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        
+        .options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .option {
+            background-color: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .option:hover {
+            border-color: #3498db;
+            background-color: #f0f8ff;
+        }
+        
+        .option.selected {
+            border-color: #2980b9;
+            background-color: #e3f2fd;
+        }
+        
+        .rating-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            margin-top: 15px;
+            padding: 0 10px;
+        }
+        
+        .rating-label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 60px;
+        }
+        
+        .rating-label span {
+            margin-top: 8px;
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+        
+        .radio-option {
+            margin-bottom: 12px;
+        }
+        
+        .radio-option input {
+            margin-right: 10px;
+        }
+        
+        .checkbox-option {
+            margin-bottom: 10px;
+        }
+        
+        .checkbox-option input {
+            margin-right: 10px;
+        }
+        
+        .textbox-container {
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .textbox-container.show {
+            display: block;
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            resize: vertical;
+            min-height: 120px;
+            margin-top: 10px;
+        }
+        
+        .buttons {
+            display: flex;
+            justify-content: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #eaeaea;
+        }
+        
+        button {
+            padding: 14px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .submit-btn {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .submit-btn:hover {
+            background-color: #2980b9;
+        }
+        
+        .submit-btn:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+        
+        .required {
+            color: #e74c3c;
+        }
+        
+        .progress-bar {
+            height: 6px;
+            background-color: #ecf0f1;
+            border-radius: 3px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background-color: #3498db;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            z-index: 9999;
+            animation: slideIn 0.3s ease, fadeOut 0.3s ease 2.7s;
+            display: none;
+        }
+        
+        .success {
+            background-color: #27ae60;
+        }
+        
+        .error {
+            background-color: #e74c3c;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .images-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .image-box {
+                width: 100%;
+                max-width: 100%;
+            }
+            
+            .image-content {
+                height: 220px;
+            }
+            
+            .rating-container {
+                justify-content: center;
+                gap: 15px;
+            }
+            
+            .rating-label {
+                width: 45px;
+            }
+            
+            .option {
+                min-width: 100%;
+            }
+            
+            .buttons {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            button {
+                width: 100%;
+            }
+            
+            .modal-content {
+                max-width: 95%;
+                max-height: 70vh;
+            }
+            
+            .close-modal {
+                right: 20px;
+                font-size: 35px;
+            }
+            
+            .notification {
+                top: 10px;
+                right: 10px;
+                left: 10px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .question {
+                padding: 15px;
+            }
+            
+            .image-content {
+                height: 180px;
+            }
+            
+            .rating-label {
+                width: 35px;
+            }
+            
+            .rating-label span {
+                font-size: 0.8rem;
+            }
+            
+            .modal-content {
+                max-width: 98%;
+                max-height: 60vh;
+            }
+            
+            .close-modal {
+                right: 15px;
+                font-size: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Notification area -->
+    <div id="notification" class="notification"></div>
+    
+    <div class="container">
+        <header>
+            <h1>Accessibility Visualization Survey</h1>
+            <p class="subtitle" style="font-size: small;">Help us improve our graph visualization tool for accessibility issues by sharing your experience as a developer. This survey should take approximately 5-7 minutes to complete. <i>Please use Laptop/Tab/PC for better visibility</i></p>
+        </header>
+        
+        <div class="progress-bar">
+            <div class="progress" id="survey-progress"></div>
+        </div>
+        
+        <div class="images-container">
+            <div class="image-box">
+                <div class="image-title">Our Portal Graph</div>
+                <div class="image-content">
+                    <img src="./1.png" 
+                         alt="Our Portal Graph - Hierarchical visualization of accessibility issues"
+                         onclick="openModal(this, 'Our Portal Graph')">
+                </div>
+            </div>
+            
+            <div class="image-box">
+                <div class="image-title">LLM-Generated Graph</div>
+                <div class="image-content">
+                    <img src="./2.png" 
+                         alt="LLM-Generated Graph - AI-generated visualization of accessibility issues"
+                         onclick="openModal(this, 'LLM-Generated Graph')">
+                </div>
+            </div>
+        </div>
+        
+        <!-- Modal for full-size image -->
+        <div id="imageModal" class="image-modal">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <img class="modal-content" id="modalImage">
+            <div id="modalCaption" class="image-caption"></div>
+        </div>
+        
+        <form class="survey-form" id="survey-form">
+            <!-- Question 1 -->
+            <div class="question">
+                <div class="question-title">1. Which visualization helps you reach actionable insights faster for accessibility issues? <span class="required">*</span></div>
+                <div class="options">
+                    <div class="option" data-value="portal">Our Portal Graph</div>
+                    <div class="option" data-value="llm">LLM Graph</div>
+                </div>
+                <input type="hidden" id="q1" name="q1" required>
+            </div>
+            
+            <!-- Question 2 -->
+            <div class="question">
+                <div class="question-title">2. What specific strengths does our hierarchical graph have over LLM-generated visualizations? <span class="required">*</span></div>
+                <div class="checkbox-option">
+                    <input type="checkbox" id="q2-1" name="q2" value="color">
+                    <label for="q2-1">Better color coding</label>
+                </div>
+                <div class="checkbox-option">
+                    <input type="checkbox" id="q2-2" name="q2" value="structure">
+                    <label for="q2-2">Clearer hierarchical structure (Principles→Causes→Effects)</label>
+                </div>
+                <div class="checkbox-option">
+                    <input type="checkbox" id="q2-3" name="q2" value="trace">
+                    <label for="q2-3">Easier to trace root causes</label>
+                </div>
+                <div class="checkbox-option">
+                    <input type="checkbox" id="q2-4" name="q2" value="all">
+                    <label for="q2-4">All of the above</label>
+                </div>
+            </div>
+            
+            <!-- Question 3 -->
+            <div class="question">
+                <div class="question-title">3. Rate the overall quality of insights provided by each visualization for accessibility improvement:</div>
+                
+                <div style="margin-bottom: 20px;">
+                    <div style="font-weight: 600; margin-bottom: 10px;">Our Portal Graph:</div>
+                    <div class="rating-container">
+                        <div class="rating-label">
+                            <input type="radio" id="portal-1" name="portal-rating" value="1">
+                            <span>Poor</span>
+                        </div>
+                        <div class="rating-label">
+                            <input type="radio" id="portal-2" name="portal-rating" value="2">
+                            <span>2</span>
+                        </div>
+                        <div class="rating-label">
+                            <input type="radio" id="portal-3" name="portal-rating" value="3">
+                            <span>3</span>
+                        </div>
+                        <div class="rating-label">
+                            <input type="radio" id="portal-4" name="portal-rating" value="4">
+                            <span>4</span>
+                        </div>
+                        <div class="rating-label">
+                            <input type="radio" id="portal-5" name="portal-rating" value="5">
+                            <span>5</span>
+                        </div>
+                        <div class="rating-label">
+                            <input type="radio" id="portal-6" name="portal-rating" value="6">
+                            <span>6</span>
+                        </div>
+                        <div class="rating-label">
+                            <input type="radio" id="portal-7" name="portal-rating" value="7">
+                            <span>7</span>
+                        </div>
+                        <div class="rating-label">
+                            <input type="radio" id="portal-8" name="portal-rating" value="8">
+                            <span>8</span>
+                        </div>
+                        <div class="rating-label">
+                            <input type="radio" id="portal-9" name="portal-rating" value="9">
+                            <span>9</span>
+                        </div>
+                        <div class="rating-label">
+                            <input type="radio" id="portal-10" name="portal-rating" value="10">
+                            <span>Excellent</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <div style="font-weight: 600; margin-bottom: 10px;">LLM-Generated Graph:</div>
+                    <div class="rating-container">
+                        <div class="rating-label">
+                            <input type="radio" id="llm-1" name="llm-rating" value="1">
+                            <span>Poor</span>
+                        </div>
+                        <div class="rating-label">
+                            <input type="radio" id="llm-2" name="llm-rating" value="2">
+                            <span>2</span>
+                        </div>
+                        <div class="rating-label">
+                            <input type="radio" id="llm-3" name="llm-rating" value="3">
+                            <span>3</span>
+                        </div>
+                        <div class="rating-label">
+                            <input type="radio" id="llm-4" name="llm-rating" value="4">
+                            <span>4</span>
+                        </div>
+                        <div class="rating-label">
+                            <input type="radio" id="llm-5" name="llm-rating" value="5">
+                            <span>5</span>
+                        </div>
+                        <div class="rating-label">
+                            <input type="radio" id="llm-6" name="llm-rating" value="6">
+                            <span>6</span>
+                        </div>
+                        <div class="rating-label">
+                            <input type="radio" id="llm-7" name="llm-rating" value="7">
+                            <span>7</span>
+                        </div>
+                        <div class="rating-label">
+                            <input type="radio" id="llm-8" name="llm-rating" value="8">
+                            <span>8</span>
+                        </div>
+                        <div class="rating-label">
+                            <input type="radio" id="llm-9" name="llm-rating" value="9">
+                            <span>9</span>
+                        </div>
+                        <div class="rating-label">
+                            <input type="radio" id="llm-10" name="llm-rating" value="10">
+                            <span>Excellent</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Question 4 -->
+            <div class="question">
+                <div class="question-title">4. Suppose you were to use this graph visualization tool, in which of the following fields would it be most helpful for your work? <span class="required">*</span></div>
+                <div class="radio-option">
+                    <input type="radio" id="q4-1" name="q4" value="test">
+                    <label for="q4-1">Test Case Generation - Creating and prioritizing accessibility test scenarios</label>
+                </div>
+                <div class="radio-option">
+                    <input type="radio" id="q4-2" name="q4" value="user">
+                    <label for="q4-2">User Story Generation - Writing user stories and acceptance criteria</label>
+                </div>
+                <div class="radio-option">
+                    <input type="radio" id="q4-3" name="q4" value="business">
+                    <label for="q4-3">Business Insights - Providing data for stakeholder decisions and ROI analysis</label>
+                </div>
+                <div class="radio-option">
+                    <input type="radio" id="q4-4" name="q4" value="code">
+                    <label for="q4-4">Code Review - Identifying accessibility issues in pull requests</label>
+                </div>
+                <div class="radio-option">
+                    <input type="radio" id="q4-5" name="q4" value="sprint">
+                    <label for="q4-5">Sprint Planning - Prioritizing accessibility work in sprints</label>
+                </div>
+                <div class="radio-option">
+                    <input type="radio" id="q4-6" name="q4" value="architecture">
+                    <label for="q4-6">Architecture Design - Designing accessible system architectures</label>
+                </div>
+                <div class="radio-option">
+                    <input type="radio" id="q4-7" name="q4" value="all">
+                    <label for="q4-7">All are equally helpful</label>
+                </div>
+            </div>
+            
+            <!-- Question 5 -->
+            <div class="question">
+                <div class="question-title">5. How likely are you to use similar graph visualizations in future accessibility assessments? <span class="required">*</span></div>
+                <div class="radio-option">
+                    <input type="radio" id="q5-1" name="q5" value="definitely">
+                    <label for="q5-1">Definitely will use</label>
+                </div>
+                <div class="radio-option">
+                    <input type="radio" id="q5-2" name="q5" value="probably">
+                    <label for="q5-2">Probably will use</label>
+                </div>
+                <div class="radio-option">
+                    <input type="radio" id="q5-3" name="q5" value="might">
+                    <label for="q5-3">Might use</label>
+                </div>
+                <div class="radio-option">
+                    <input type="radio" id="q5-4" name="q5" value="probably-not">
+                    <label for="q5-4">Probably won't use</label>
+                </div>
+                <div class="radio-option">
+                    <input type="radio" id="q5-5" name="q5" value="definitely-not">
+                    <label for="q5-5">Definitely won't use</label>
+                </div>
+            </div>
+            
+            <!-- Question 6 -->
+            <div class="question">
+                <div class="question-title">6. What are the further improvements you want to see in our graph? (optional)</div>
+                <div class="radio-option">
+                    <input type="radio" id="q6-yes" name="q6-option" value="yes">
+                    <label for="q6-yes">Yes, please specify in the textbox</label>
+                </div>
+                <div class="radio-option">
+                    <input type="radio" id="q6-no" name="q6-option" value="no">
+                    <label for="q6-no">No</label>
+                </div>
+                
+                <div class="textbox-container" id="textbox-container">
+                    <label for="improvements">Please specify improvements:</label>
+                    <textarea id="improvements" name="improvements" placeholder="Please share any suggestions for improvement..."></textarea>
+                </div>
+            </div>
+            
+            <div class="buttons">
+                <button type="submit" class="submit-btn" id="submit-btn">Submit Survey</button>
+            </div>
+        </form>
+        
+        <div class="footer">
+            <marquee>Thank you for participating in our survey. Your feedback will help us improve our work.</marquee>
+            <p>© 2026</p>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Question 1 - Option selection
+            const q1Options = document.querySelectorAll('.question:first-child .option');
+            const q1HiddenInput = document.getElementById('q1');
+            
+            q1Options.forEach(option => {
+                option.addEventListener('click', function() {
+                    q1Options.forEach(opt => opt.classList.remove('selected'));
+                    this.classList.add('selected');
+                    q1HiddenInput.value = this.getAttribute('data-value');
+                });
+            });
+            
+            // Question 6 - Show/hide textbox
+            const q6Yes = document.getElementById('q6-yes');
+            const q6No = document.getElementById('q6-no');
+            const textboxContainer = document.getElementById('textbox-container');
+            
+            q6Yes.addEventListener('change', function() {
+                if (this.checked) {
+                    textboxContainer.classList.add('show');
+                }
+            });
+            
+            q6No.addEventListener('change', function() {
+                if (this.checked) {
+                    textboxContainer.classList.remove('show');
+                }
+            });
+            
+            // Form submission
+            document.getElementById('survey-form').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                // Check required fields
+                const requiredFields = [
+                    {id: 'q1', name: 'Question 1'},
+                    {name: 'q2', question: 'Question 2'},
+                    {name: 'q4', question: 'Question 4'},
+                    {name: 'q5', question: 'Question 5'}
+                ];
+                
+                let isValid = true;
+                let missingFields = [];
+                
+                // Check Q1
+                if (!q1HiddenInput.value) {
+                    isValid = false;
+                    missingFields.push('Question 1');
+                }
+                
+                // Check Q2 (at least one checkbox)
+                const q2Checkboxes = document.querySelectorAll('input[name="q2"]:checked');
+                if (q2Checkboxes.length === 0) {
+                    isValid = false;
+                    missingFields.push('Question 2');
+                }
+                
+                // Check Q4
+                const q4Selected = document.querySelector('input[name="q4"]:checked');
+                if (!q4Selected) {
+                    isValid = false;
+                    missingFields.push('Question 4');
+                }
+                
+                // Check Q5
+                const q5Selected = document.querySelector('input[name="q5"]:checked');
+                if (!q5Selected) {
+                    isValid = false;
+                    missingFields.push('Question 5');
+                }
+                
+                if (!isValid) {
+                    showNotification('Please answer all required questions', 'error');
+                    return;
+                }
+                
+                // Collect form data
+                const formData = {
+                    q1: q1HiddenInput.value,
+                    q2: Array.from(q2Checkboxes).map(cb => cb.value),
+                    portal_rating: document.querySelector('input[name="portal-rating"]:checked')?.value || '',
+                    llm_rating: document.querySelector('input[name="llm-rating"]:checked')?.value || '',
+                    q4: q4Selected.value,
+                    q5: q5Selected.value,
+                    has_improvements: document.getElementById('q6-yes').checked,
+                    improvements: document.getElementById('improvements').value || ''
+                };
+                
+                // Show loading state
+                const submitBtn = document.getElementById('submit-btn');
+                const originalText = submitBtn.textContent;
+                submitBtn.textContent = 'Submitting...';
+                submitBtn.disabled = true;
+                
+                try {
+                    // Send to backend
+                    const response = await fetch('/api/submit', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(formData)
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok && data.status === 'success') {
+                        showNotification('Thank you! Your survey has been submitted successfully.', 'success');
+                        
+                        // Reset form
+                        this.reset();
+                        q1Options.forEach(opt => opt.classList.remove('selected'));
+                        q1HiddenInput.value = '';
+                        textboxContainer.classList.remove('show');
+                        updateProgress();
+                    } else {
+                        throw new Error(data.message || 'Submission failed');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    showNotification('Error submitting survey. Please try again.', 'error');
+                } finally {
+                    // Restore button state
+                    submitBtn.textContent = originalText;
+                    submitBtn.disabled = false;
+                }
+            });
+            
+            // Update progress bar as user fills the survey
+            function updateProgress() {
+                let answered = 0;
+                const totalQuestions = 6; // Questions 3 and 6 are optional
+                
+                // Check Q1
+                if (q1HiddenInput.value) answered++;
+                
+                // Check Q2 (at least one checkbox)
+                const q2Checkboxes = document.querySelectorAll('input[name="q2"]:checked');
+                if (q2Checkboxes.length > 0) answered++;
+                
+                // Check Q3 (optional, but check if at least one rating is selected)
+                const portalRating = document.querySelector('input[name="portal-rating"]:checked');
+                const llmRating = document.querySelector('input[name="llm-rating"]:checked');
+                if (portalRating || llmRating) answered++;
+                
+                // Check Q4
+                const q4Selected = document.querySelector('input[name="q4"]:checked');
+                if (q4Selected) answered++;
+                
+                // Check Q5
+                const q5Selected = document.querySelector('input[name="q5"]:checked');
+                if (q5Selected) answered++;
+                
+                // Check Q6 (optional)
+                const q6Option = document.querySelector('input[name="q6-option"]:checked');
+                if (q6Option) answered++;
+                
+                const progressPercent = (answered / totalQuestions) * 100;
+                document.getElementById('survey-progress').style.width = `${progressPercent}%`;
+            }
+            
+            // Add event listeners to update progress
+            document.querySelectorAll('input, .option').forEach(element => {
+                element.addEventListener('change', updateProgress);
+                if (element.classList && element.classList.contains('option')) {
+                    element.addEventListener('click', updateProgress);
+                }
+            });
+            
+            // Initialize progress bar
+            updateProgress();
+        });
+        
+        // Notification function
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.style.display = 'block';
+            
+            // Auto-hide after 3 seconds
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+        
+        // Image modal functionality
+        function openModal(imgElement, title) {
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+            const caption = document.getElementById('modalCaption');
+            
+            modal.style.display = "block";
+            modalImg.src = imgElement.src;
+            caption.innerHTML = title;
+            
+            // Close modal when clicking outside the image
+            modal.onclick = function(event) {
+                if (event.target === modal) {
+                    closeModal();
+                }
+            };
+            
+            // Close modal with Escape key
+            document.addEventListener('keydown', function(event) {
+                if (event.key === "Escape") {
+                    closeModal();
+                }
+            });
+        }
+        
+        function closeModal() {
+            document.getElementById('imageModal').style.display = "none";
+        }
+        
+        // Fallback for missing images
+        document.addEventListener('DOMContentLoaded', function() {
+            const images = document.querySelectorAll('.image-content img');
+            images.forEach(img => {
+                img.addEventListener('error', function() {
+                    this.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="250" viewBox="0 0 400 250"><rect width="400" height="250" fill="%23f8f9fa"/><text x="200" y="125" text-anchor="middle" font-family="Arial" font-size="16" fill="%236c757d">Image not found</text></svg>';
+                });
+            });
+        });
+    </script>
+</body>
+</html>
