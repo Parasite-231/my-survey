@@ -230,518 +230,351 @@ def export_csv():
 def admin():
     return '''
     <!DOCTYPE html>
-    <html>
-    <head>
-        <title>Survey Responses Admin</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <style>
-            * {
-                box-sizing: border-box;
-                margin: 0;
-                padding: 0;
-                font-family: Arial, sans-serif;
-            }
-            body {
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                min-height: 100vh;
-                padding: 20px;
-            }
-            .container {
-                max-width: 1400px;
-                margin: 0 auto;
-                background: white;
-                padding: 30px;
-                border-radius: 15px;
-                box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            }
-            .header {
-                text-align: center;
-                margin-bottom: 30px;
-                padding-bottom: 20px;
-                border-bottom: 2px solid #f0f0f0;
-            }
-            h1 {
-                color: #2c3e50;
-                font-size: 2.5rem;
-                margin-bottom: 10px;
-            }
-            .subtitle {
-                color: #7f8c8d;
-                font-size: 1.1rem;
-            }
-            .controls {
-                display: flex;
-                flex-wrap: wrap;
-                gap: 10px;
-                margin-bottom: 30px;
-                padding: 20px;
-                background: #f8f9fa;
-                border-radius: 10px;
-            }
-            button {
-                padding: 12px 24px;
-                border: none;
-                border-radius: 8px;
-                font-size: 1rem;
-                font-weight: 600;
-                cursor: pointer;
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                transition: all 0.3s ease;
-            }
-            button:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            }
-            .btn-primary {
-                background: #3498db;
-                color: white;
-            }
-            .btn-success {
-                background: #27ae60;
-                color: white;
-            }
-            .btn-danger {
-                background: #e74c3c;
-                color: white;
-            }
-            .btn-secondary {
-                background: #95a5a6;
-                color: white;
-            }
-            .stats-grid {
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-                gap: 20px;
-                margin-bottom: 30px;
-            }
-            .stat-card {
-                background: white;
-                padding: 25px;
-                border-radius: 10px;
-                box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-                border-left: 5px solid #3498db;
-            }
-            .stat-card h3 {
-                color: #2c3e50;
-                margin-bottom: 15px;
-                font-size: 1.2rem;
-            }
-            .stat-value {
-                font-size: 2.5rem;
-                font-weight: bold;
-                color: #3498db;
-                margin-bottom: 10px;
-            }
-            .stat-label {
-                color: #7f8c8d;
-                font-size: 0.9rem;
-            }
-            table {
-                width: 100%;
-                border-collapse: collapse;
-                margin-top: 20px;
-                background: white;
-                border-radius: 10px;
-                overflow: hidden;
-                box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-            }
-            th, td {
-                padding: 15px;
-                text-align: left;
-                border-bottom: 1px solid #f0f0f0;
-                font-size: 14px;
-            }
-            th {
-                background: #3498db;
-                color: white;
-                font-weight: 600;
-                position: sticky;
-                top: 0;
-            }
-            tr:hover {
-                background-color: #f8f9fa;
-            }
-            .badge {
-                display: inline-block;
-                padding: 4px 12px;
-                border-radius: 20px;
-                font-size: 12px;
-                font-weight: bold;
-                text-transform: uppercase;
-            }
-            .badge-portal {
-                background: #3498db;
-                color: white;
-            }
-            .badge-llm {
-                background: #9b59b6;
-                color: white;
-            }
-            .rating {
-                font-weight: bold;
-                padding: 4px 10px;
-                border-radius: 5px;
-                display: inline-block;
-            }
-            .rating-portal {
-                background: #d6eaf8;
-                color: #21618c;
-            }
-            .rating-llm {
-                background: #e8daef;
-                color: #6c3483;
-            }
-            .improvements {
-                max-width: 300px;
-                word-wrap: break-word;
-                line-height: 1.4;
-                font-size: 13px;
-            }
-            .timestamp {
-                font-size: 12px;
-                color: #7f8c8d;
-            }
-            .no-data {
-                text-align: center;
-                padding: 40px;
-                color: #95a5a6;
-                font-size: 1.2rem;
-            }
-            .loading {
-                text-align: center;
-                padding: 40px;
-                color: #3498db;
-            }
-            @media (max-width: 768px) {
-                .container {
-                    padding: 15px;
-                }
-                .controls {
-                    flex-direction: column;
-                }
-                button {
-                    width: 100%;
-                    justify-content: center;
-                }
-                table {
-                    display: block;
-                    overflow-x: auto;
-                }
-            }
-        </style>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    </head>
-    <body>
-        <div class="container">
-            <div class="header">
-                <h1><i class="fas fa-chart-bar"></i> Survey Responses Dashboard</h1>
-                <p class="subtitle">Real-time monitoring of accessibility visualization survey responses</p>
-            </div>
-            
-            <div class="controls">
-                <button class="btn-primary" onclick="loadData()">
-                    <i class="fas fa-sync-alt"></i> Refresh Data
-                </button>
-                <button class="btn-success" onclick="exportCSV()">
-                    <i class="fas fa-download"></i> Export CSV
-                </button>
-                <button class="btn-secondary" onclick="viewStats()">
-                    <i class="fas fa-chart-pie"></i> View Statistics
-                </button>
-                <button class="btn-danger" onclick="clearData()">
-                    <i class="fas fa-trash-alt"></i> Clear All Data
-                </button>
-            </div>
-            
-            <div class="stats-grid" id="statsGrid">
-                <div class="loading" id="loadingStats">
-                    <i class="fas fa-spinner fa-spin"></i> Loading statistics...
-                </div>
-            </div>
-            
-            <div style="overflow-x: auto;">
-                <table id="responsesTable">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Preferred Graph</th>
-                            <th>Strengths</th>
-                            <th>Portal Rating</th>
-                            <th>LLM Rating</th>
-                            <th>Use Case</th>
-                            <th>Future Use</th>
-                            <th>Improvements</th>
-                            <th>Submitted</th>
-                        </tr>
-                    </thead>
-                    <tbody id="responsesBody">
-                        <tr>
-                            <td colspan="9" class="loading">
-                                <i class="fas fa-spinner fa-spin"></i> Loading responses...
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+<html>
+<head>
+    <title>Survey Responses Admin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+        body {
+            background: #f5f7fa;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .btn-refresh { background: #3498db; color: white; }
+        .btn-export { background: #27ae60; color: white; }
+        .btn-clear { background: #e74c3c; color: white; }
+        .stats {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        .stat-card {
+            text-align: center;
+            padding: 15px;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #3498db;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            font-size: 14px;
+        }
+        th {
+            background: #3498db;
+            color: white;
+            position: sticky;
+            top: 0;
+        }
+        tr:hover {
+            background: #f5f5f5;
+        }
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .badge-portal { background: #3498db; color: white; }
+        .badge-llm { background: #9b59b6; color: white; }
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #3498db;
+            font-size: 1.2rem;
+        }
+        @media (max-width: 768px) {
+            .container { padding: 15px; }
+            table { display: block; overflow-x: auto; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 Survey Responses Admin</h1>
+        
+        <div class="controls">
+            <button class="btn-refresh" onclick="loadData()">🔄 Refresh</button>
+            <button class="btn-export" onclick="exportCSV()">📥 Export CSV</button>
+            <button class="btn-clear" onclick="clearData()">🗑️ Clear All</button>
+        </div>
+        
+        <div class="stats" id="stats">
+            <div class="loading" id="loadingStats">
+                <i>Loading statistics...</i>
             </div>
         </div>
         
-        <script>
-            async function loadData() {
-                try {
-                    // Show loading state
-                    document.getElementById('responsesBody').innerHTML = `
-                        <tr>
-                            <td colspan="9" class="loading">
-                                <i class="fas fa-spinner fa-spin"></i> Loading responses...
-                            </td>
-                        </tr>
-                    `;
-                    
-                    // Load responses
-                    const response = await fetch('/api/responses');
-                    const data = await response.json();
-                    
-                    // Load statistics
-                    await loadStatistics();
-                    
-                    // Update table
-                    updateTable(data);
-                    
-                } catch (error) {
-                    console.error('Error loading data:', error);
-                    document.getElementById('responsesBody').innerHTML = `
-                        <tr>
-                            <td colspan="9" style="color: #e74c3c; text-align: center; padding: 30px;">
-                                <i class="fas fa-exclamation-triangle"></i> Error loading data. Please try again.
-                            </td>
-                        </tr>
-                    `;
-                }
+        <div id="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Preferred</th>
+                        <th>Strengths</th>
+                        <th>Portal</th>
+                        <th>LLM</th>
+                        <th>Use Case</th>
+                        <th>Future Use</th>
+                        <th>Improvements</th>
+                        <th>Time</th>
+                    </tr>
+                </thead>
+                <tbody id="responsesTable">
+                    <tr><td colspan="9" class="loading">Loading responses...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Load data on page load
+        document.addEventListener('DOMContentLoaded', loadData);
+        
+        async function loadData() {
+            try {
+                // Show loading
+                document.getElementById('responsesTable').innerHTML = 
+                    '<tr><td colspan="9" class="loading">Loading...</td></tr>';
+                
+                // Fetch responses
+                const response = await fetch('/api/responses');
+                if (!response.ok) throw new Error('Failed to fetch data');
+                
+                const data = await response.json();
+                console.log('Loaded data:', data);
+                
+                // Update table
+                updateTable(data);
+                
+                // Update statistics
+                updateStats(data);
+                
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('responsesTable').innerHTML = 
+                    '<tr><td colspan="9" style="color: #e74c3c; text-align: center; padding: 20px;">Error loading data: ' + error.message + '</td></tr>';
+            }
+        }
+        
+        function updateTable(data) {
+            const tbody = document.getElementById('responsesTable');
+            
+            if (!data || data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 20px; color: #95a5a6;">No responses yet</td></tr>';
+                return;
             }
             
-            async function loadStatistics() {
-                try {
-                    const response = await fetch('/api/stats');
-                    const stats = await response.json();
-                    
-                    const statsGrid = document.getElementById('statsGrid');
-                    statsGrid.innerHTML = `
-                        <div class="stat-card">
-                            <h3><i class="fas fa-users"></i> Total Responses</h3>
-                            <div class="stat-value">${stats.total_responses || 0}</div>
-                            <div class="stat-label">Survey Submissions</div>
-                        </div>
-                        <div class="stat-card">
-                            <h3><i class="fas fa-project-diagram"></i> Portal Graph</h3>
-                            <div class="stat-value">${stats.q1_distribution?.portal || 0}</div>
-                            <div class="stat-label">Preferred by users</div>
-                        </div>
-                        <div class="stat-card">
-                            <h3><i class="fas fa-brain"></i> LLM Graph</h3>
-                            <div class="stat-value">${stats.q1_distribution?.llm || 0}</div>
-                            <div class="stat-label">Preferred by users</div>
-                        </div>
-                        <div class="stat-card">
-                            <h3><i class="fas fa-star"></i> Average Ratings</h3>
-                            <div class="stat-value">${stats.average_ratings?.portal || 0}/10</div>
-                            <div class="stat-label">Portal: ${stats.average_ratings?.portal || 0}, LLM: ${stats.average_ratings?.llm || 0}</div>
-                        </div>
-                    `;
-                    
-                } catch (error) {
-                    console.error('Error loading statistics:', error);
-                }
+            tbody.innerHTML = '';
+            
+            data.forEach(item => {
+                const row = document.createElement('tr');
+                
+                // Format strengths
+                const strengths = Array.isArray(item.q2) 
+                    ? item.q2.map(s => `<div style="margin: 2px 0; font-size: 12px;">• ${s}</div>`).join('')
+                    : item.q2;
+                
+                // Format improvements
+                const improvements = item.has_improvements && item.improvements 
+                    ? `<div style="max-width: 200px; word-wrap: break-word;">${item.improvements}</div>`
+                    : 'None';
+                
+                // Format timestamp
+                const time = new Date(item.timestamp).toLocaleString();
+                
+                row.innerHTML = `
+                    <td>${item.id}</td>
+                    <td>
+                        <span class="badge ${item.q1 === 'portal' ? 'badge-portal' : 'badge-llm'}">
+                            ${item.q1 === 'portal' ? 'Portal' : 'LLM'}
+                        </span>
+                    </td>
+                    <td>${strengths}</td>
+                    <td>${item.portal_rating || 'N/A'}</td>
+                    <td>${item.llm_rating || 'N/A'}</td>
+                    <td>${formatUseCase(item.q4)}</td>
+                    <td>${formatFutureUse(item.q5)}</td>
+                    <td>${improvements}</td>
+                    <td style="font-size: 12px; color: #666;">${time}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+        
+        function updateStats(data) {
+            const statsDiv = document.getElementById('stats');
+            
+            if (!data || data.length === 0) {
+                statsDiv.innerHTML = '<div class="stat-card"><div class="stat-value">0</div><div>Total Responses</div></div>';
+                return;
             }
             
-            function updateTable(data) {
-                const tbody = document.getElementById('responsesBody');
+            // Calculate statistics
+            const total = data.length;
+            const portalCount = data.filter(r => r.q1 === 'portal').length;
+            const llmCount = data.filter(r => r.q1 === 'llm').length;
+            
+            // Calculate average ratings
+            const portalRatings = data.filter(r => r.portal_rating && !isNaN(r.portal_rating)).map(r => parseInt(r.portal_rating));
+            const llmRatings = data.filter(r => r.llm_rating && !isNaN(r.llm_rating)).map(r => parseInt(r.llm_rating));
+            
+            const avgPortal = portalRatings.length > 0 
+                ? (portalRatings.reduce((a, b) => a + b, 0) / portalRatings.length).toFixed(1)
+                : 'N/A';
                 
-                if (!data || data.length === 0) {
-                    tbody.innerHTML = `
-                        <tr>
-                            <td colspan="9" class="no-data">
-                                <i class="fas fa-inbox"></i><br>
-                                No survey responses yet
-                            </td>
-                        </tr>
-                    `;
-                    return;
-                }
-                
-                tbody.innerHTML = '';
-                
-                data.forEach(item => {
-                    const row = document.createElement('tr');
-                    
-                    // Format strengths
-                    const strengths = Array.isArray(item.q2) 
-                        ? item.q2.map(str => `<div style="margin: 3px 0; font-size: 12px; color: #2c3e50;">✓ ${str}</div>`).join('')
-                        : `<div style="font-size: 12px;">${item.q2}</div>`;
-                    
-                    // Format improvements
-                    const improvements = item.has_improvements && item.improvements
-                        ? `<div class="improvements">${item.improvements}</div>`
-                        : '<span style="color: #95a5a6;">None</span>';
-                    
-                    row.innerHTML = `
-                        <td><strong>#${item.id}</strong></td>
-                        <td>
-                            <span class="badge ${item.q1 === 'portal' ? 'badge-portal' : 'badge-llm'}">
-                                ${item.q1 === 'portal' ? 'Portal Graph' : 'LLM Graph'}
-                            </span>
-                        </td>
-                        <td>${strengths}</td>
-                        <td>
-                            ${item.portal_rating ? `
-                                <span class="rating rating-portal">
-                                    ${item.portal_rating}/10
-                                </span>
-                            ` : '<span style="color: #95a5a6;">N/A</span>'}
-                        </td>
-                        <td>
-                            ${item.llm_rating ? `
-                                <span class="rating rating-llm">
-                                    ${item.llm_rating}/10
-                                </span>
-                            ` : '<span style="color: #95a5a6;">N/A</span>'}
-                        </td>
-                        <td>
-                            <div style="font-size: 13px; max-width: 200px;">
-                                ${formatUseCase(item.q4)}
-                            </div>
-                        </td>
-                        <td>
-                            <div style="font-size: 13px;">
-                                ${formatFutureUse(item.q5)}
-                            </div>
-                        </td>
-                        <td class="improvements">${improvements}</td>
-                        <td class="timestamp">
-                            ${formatDate(item.timestamp)}
-                        </td>
-                    `;
-                    tbody.appendChild(row);
+            const avgLLM = llmRatings.length > 0
+                ? (llmRatings.reduce((a, b) => a + b, 0) / llmRatings.length).toFixed(1)
+                : 'N/A';
+            
+            statsDiv.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-value">${total}</div>
+                    <div>Total Responses</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${portalCount}</div>
+                    <div>Portal Graph</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${llmCount}</div>
+                    <div>LLM Graph</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${avgPortal}</div>
+                    <div>Avg Portal Rating</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${avgLLM}</div>
+                    <div>Avg LLM Rating</div>
+                </div>
+            `;
+        }
+        
+        function formatUseCase(q4) {
+            const map = {
+                'test': 'Test Cases',
+                'user': 'User Stories',
+                'business': 'Business Insights',
+                'code': 'Code Review',
+                'sprint': 'Sprint Planning',
+                'architecture': 'Architecture',
+                'all': 'All'
+            };
+            return map[q4] || q4;
+        }
+        
+        function formatFutureUse(q5) {
+            const map = {
+                'definitely': 'Definitely',
+                'probably': 'Probably',
+                'might': 'Might',
+                'probably-not': 'Probably Not',
+                'definitely-not': 'Definitely Not'
+            };
+            return map[q5] || q5;
+        }
+        
+        function exportCSV() {
+            window.open('/api/export/csv', '_blank');
+        }
+        
+        async function clearData() {
+            if (!confirm('WARNING: Delete ALL responses? This cannot be undone.')) return;
+            
+            const password = prompt('Enter admin password:');
+            if (password !== 'admin123') {
+                alert('Wrong password');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/responses?password=' + password, {
+                    method: 'DELETE'
                 });
-            }
-            
-            function formatUseCase(q4) {
-                const useCases = {
-                    'test': 'Test Case Generation',
-                    'user': 'User Story Generation',
-                    'business': 'Business Insights',
-                    'code': 'Code Review',
-                    'sprint': 'Sprint Planning',
-                    'architecture': 'Architecture Design',
-                    'all': 'All are equally helpful'
-                };
-                return useCases[q4] || q4;
-            }
-            
-            function formatFutureUse(q5) {
-                const futureUses = {
-                    'definitely': 'Definitely will use',
-                    'probably': 'Probably will use',
-                    'might': 'Might use',
-                    'probably-not': 'Probably won\'t use',
-                    'definitely-not': 'Definitely won\'t use'
-                };
-                return futureUses[q5] || q5;
-            }
-            
-            function formatDate(timestamp) {
-                const date = new Date(timestamp);
-                return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-            }
-            
-            function exportCSV() {
-                window.open('/api/export/csv', '_blank');
-            }
-            
-            async function viewStats() {
-                try {
-                    const response = await fetch('/api/stats');
-                    const stats = await response.json();
-                    
-                    let statsHTML = '<h2>Detailed Statistics</h2>';
-                    statsHTML += `<p><strong>Total Responses:</strong> ${stats.total_responses}</p>`;
-                    statsHTML += `<p><strong>Portal vs LLM:</strong> ${stats.q1_distribution?.portal || 0} vs ${stats.q1_distribution?.llm || 0}</p>`;
-                    statsHTML += `<p><strong>Average Ratings:</strong> Portal: ${stats.average_ratings?.portal || 0}/10, LLM: ${stats.average_ratings?.llm || 0}/10</p>`;
-                    
-                    alert(statsHTML);
-                } catch (error) {
-                    alert('Error loading statistics: ' + error.message);
-                }
-            }
-            
-            async function clearData() {
-                if (!confirm('⚠️ WARNING: This will delete ALL survey responses. This action cannot be undone.\n\nAre you sure?')) {
-                    return;
-                }
                 
-                const password = prompt('Enter admin password to confirm:');
-                if (password !== 'admin123') {
-                    alert('Incorrect password. Operation cancelled.');
-                    return;
+                if (response.ok) {
+                    alert('All data cleared');
+                    loadData();
+                } else {
+                    alert('Error clearing data');
                 }
-                
-                try {
-                    const response = await fetch('/api/responses', {
-                        method: 'DELETE'
-                    });
-                    
-                    if (response.ok) {
-                        alert('All responses have been cleared.');
-                        loadData();
-                    } else {
-                        alert('Error clearing responses.');
-                    }
-                } catch (error) {
-                    alert('Error: ' + error.message);
-                }
+            } catch (error) {
+                alert('Error: ' + error.message);
             }
-            
-            // Add DELETE endpoint for responses
-            app.route('/api/responses', methods=['DELETE'])(async function delete_responses() {
-                try:
-                    conn = sqlite3.connect('survey.db')
-                    c = conn.cursor()
-                    c.execute('DELETE FROM survey_responses')
-                    conn.commit()
-                    conn.close()
-                    return jsonify({'status': 'success', 'message': 'All responses cleared'}), 200
-                except Exception as e:
-                    return jsonify({'status': 'error', 'message': str(e)}), 500
-            })
-            
-            // Load data on page load
-            document.addEventListener('DOMContentLoaded', loadData);
-            
-            // Auto-refresh every 60 seconds
-            setInterval(loadData, 60000);
-        </script>
-    </body>
-    </html>
+        }
+    </script>
+</body>
+</html>
     '''
 
-# DELETE endpoint for responses
+
+# DELETE endpoint to clear all data
 @app.route('/api/responses', methods=['DELETE'])
 def delete_responses():
     try:
+        # Get password from query parameter
         password = request.args.get('password')
         if password != 'admin123':
-            return jsonify({'status': 'error', 'message': 'Unauthorized'}), 401
-            
+            return jsonify({'error': 'Unauthorized'}), 401
+        
         conn = sqlite3.connect('survey.db')
         c = conn.cursor()
         c.execute('DELETE FROM survey_responses')
         conn.commit()
         conn.close()
         
-        return jsonify({'status': 'success', 'message': 'All responses cleared'}), 200
+        return jsonify({'success': True, 'message': 'All responses cleared'}), 200
+        
     except Exception as e:
-        return jsonify({'status': 'error', 'message': str(e)}), 500
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
     # Get port from environment variable (for Replit)
