@@ -255,7 +255,7 @@ def admin():
                 box-shadow: 0 20px 60px rgba(0,0,0,0.3);
             }
             .header {
-                text-align: center;
+                text-align: left;
                 margin-bottom: 30px;
                 padding-bottom: 20px;
                 border-bottom: 2px solid #f0f0f0;
